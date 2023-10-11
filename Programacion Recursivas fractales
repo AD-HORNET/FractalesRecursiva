@@ -1,0 +1,67 @@
+PineFractal pine;
+
+void setup() {
+  size(800, 600);
+  background(255);
+  pine = new PineFractal();
+}
+
+void draw() {
+  pine.grow();
+  pine.render();
+}
+
+class PineFractal {
+  PVector start;
+  float branchAngle;
+  float branchLength;
+  boolean growing;
+  int totalFrames;
+
+  PineFractal() {
+    start = new PVector(width / 2, height);
+    branchAngle = PI / 4; // Ángulo de las ramas
+    branchLength = 120;    // Longitud de las ramas
+    growing = true;
+    totalFrames = 100;
+  }
+
+  void render() {
+    stroke(0);
+    drawBranch(start, branchLength, PI / 2);  // Dibuja el tronco principal
+    drawLeaves(start.x, start.y - branchLength * 1.2, 60); // Dibuja las hojas
+  }
+
+  void grow() {
+    if (growing) {
+      if (frameCount < totalFrames) {
+        background(255);
+        branchLength = map(frameCount, 0, totalFrames, 120, 200);
+        branchAngle = map(frameCount, 0, totalFrames, PI / 4, PI / 6);
+      } else {
+        growing = false;
+        frameCount = 0;
+      }
+    } else {
+      if (frameCount >= totalFrames) {
+        growing = true;
+        frameCount = 0;
+      }
+    }
+  }
+
+  void drawBranch(PVector start, float len, float angle) {
+    if (len > 2) {
+      PVector end = new PVector(start.x + cos(angle) * len, start.y - sin(angle) * len);
+      line(start.x, start.y, end.x, end.y);
+      drawBranch(end, len * random(0.65, 0.8), angle - random(PI/6, PI/3));
+      drawBranch(end, len * random(0.65, 0.8), angle + random(PI/6, PI/3));
+    }
+  }
+
+  void drawLeaves(float x, float y, float radius) {
+    fill(0, 255, 0); // Color verde para las hojas
+    noStroke();
+    ellipse(x, y, radius, radius);
+  }
+}
